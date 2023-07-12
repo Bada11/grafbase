@@ -22,8 +22,14 @@ const FooterColumn = ({ title, links }: Props) => (
 
 const Footer = () => {
   return (
-    <footer className="p-5 w-full ">
-      <h1 className="text-[30px] logo2">Swipe</h1>
+    <footer className="sm:p-10 p-5 w-full ">
+      <div className="">
+        <h1 className="text-[30px] logo2">Swipe</h1>
+        <p className="sm:w-[400px] w-full text-[15px] mt-5 font-normal text-[#5f5f5f]">
+          Swipe is an online platform in which you can post your projects to
+          viewers online
+        </p>
+      </div>
 
       <div className="flex flex-wrap gap-12 mt-10">
         <FooterColumn

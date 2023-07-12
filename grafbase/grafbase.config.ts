@@ -1,27 +1,50 @@
-import { g, auth, config } from '@grafbase/sdk'
+import { g, config, auth } from "@grafbase/sdk";
 
-const User = g.model('User',{
-  name:g.string().length({min:2,max:20}),
-  email:g.string().unique(),
-  avatarUrl:g.url(),
-  description:g.string().optional(),
-  githubUrl:g.url(),
-  linkedInUrl:g.url().optional(),
-  projects:g.relation(()=>Project).list().optional(),
-})
+// @ts-ignore
+const User = g
+  .model("User", {
+    name: g.string().length({ min: 2, max: 100 }),
+    email: g.string().unique(),
+    avatarUrl: g.url(),
+    Url: g.url(),
+    description: g.string().length({ min: 2, max: 1000 }).optional(),
+    githubUrl: g.url().optional(),
+    linkedInUrl: g.url().optional(),
+    projects: g
+      .relation(() => Project)
+      .list()
+      .optional(),
+  })
+  .auth((rules) => {
+    rules.public().read();
+  });
 
-const Project = g.model('Project',{
-  title:g.string().length({min:3}),
-  description:g.string(),
-  githubUrl:g.url(),
-  liveSiteUrl:g.url(),
-  image:g.url(),
-  createdBy:g.relation(()=>User),
-  category:g.string().search()
+// @ts-ignore
+const Project = g
+  .model("Project", {
+    title: g.string().length({ min: 3 }),
+    description: g.string(),
+    image: g.url(),
+    linkInUrl: g.url(),
+    Url: g.url(),
+    githubUrl: g.url(),
+    categories: g.string().search(),
+    createdBy: g.relation(() => User),
+  })
+  .auth((rules) => {
+    rules.public().read();
+    rules.private().create().delete().update();
+  });
 
-})
+const jwt = auth.JWT({
+  issuer: "grafbase",
+  secret: g.env("NEXTAUTH_SECRET"),
+});
 
 export default config({
-  schema: g
-  
-})
+  schema: g,
+  auth: {
+    providers: [jwt],
+    rules: (rules) => rules.private(),
+  },
+});
